@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LanLink - Laptop</title>
+  <style>
+    :root {
+      --ink: #17211b;
+      --muted: #63716a;
+      --paper: #f7f4ec;
+      --card: rgba(255, 255, 255, .86);
+      --line: #d8ded5;
+      --accent: #e66d3f;
+      --accent-dark: #b94c25;
+      --mint: #d8eee2;
+      --shadow: 0 18px 50px rgba(36, 53, 42, .13);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, #f8d9c5 0, transparent 33%),
+        radial-gradient(circle at 100% 15%, #cfe8df 0, transparent 30%),
+        var(--paper);
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      min-height: 100vh;
+    }
+
+    main { width: min(980px, calc(100% - 32px)); margin: 0 auto; padding: 42px 0 56px; }
+
+    .hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+    .eyebrow { color: var(--accent-dark); font-size: 12px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+    h1 { margin: 7px 0 8px; font-family: Georgia, serif; font-size: clamp(38px, 7vw, 64px); line-height: .95; letter-spacing: -.045em; }
+    .lede { color: var(--muted); max-width: 510px; margin: 0; line-height: 1.55; }
+    .live { display: inline-flex; align-items: center; gap: 8px; color: #236d4a; background: var(--mint); border-radius: 999px; padding: 9px 13px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+    .live-dot { width: 9px; height: 9px; border-radius: 50%; background: #2fa66b; box-shadow: 0 0 0 5px rgba(47, 166, 107, .14); }
+
+    .grid { display: grid; grid-template-columns: 320px 1fr; gap: 18px; }
+    .card { border: 1px solid rgba(216, 222, 213, .9); background: var(--card); backdrop-filter: blur(12px); border-radius: 22px; box-shadow: var(--shadow); padding: 22px; }
+    .card h2 { font-family: Georgia, serif; font-size: 22px; margin: 0 0 16px; }
+    .label { color: var(--muted); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 800; }
+    .code { margin: 8px 0 18px; font-family: Georgia, serif; font-size: 42px; letter-spacing: .16em; color: var(--accent-dark); }
+    .meta { border-top: 1px solid var(--line); padding-top: 14px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .addresses { margin: 7px 0 0; padding-left: 17px; }
+    .addresses li { margin: 3px 0; font-family: Consolas, monospace; color: var(--ink); font-size: 12px; }
+    .hint { margin: 18px 0 0; border-left: 3px solid var(--accent); padding-left: 11px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+    .messages { min-height: 410px; display: flex; flex-direction: column; }
+    .messages-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .messages-head h2 { margin-bottom: 0; }
+    .message-list { flex: 1; overflow: auto; margin: 18px 0; padding: 2px; }
+    .empty { color: var(--muted); text-align: center; padding: 90px 12px; font-family: Georgia, serif; font-style: italic; }
+    .message { width: fit-content; max-width: min(82%, 560px); margin: 10px 0; border-radius: 16px; padding: 11px 14px; background: #eef2ed; animation: rise .22s ease-out both; }
+    .message.laptop { margin-left: auto; background: #ffe1d2; }
+    .message-meta { color: var(--muted); font-size: 11px; margin-bottom: 5px; }
+    .message-text { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.45; }
+    .composer { display: flex; gap: 9px; border-top: 1px solid var(--line); padding-top: 16px; }
+    textarea { flex: 1; min-height: 46px; max-height: 130px; resize: vertical; border: 1px solid var(--line); border-radius: 13px; background: #fffdf9; color: var(--ink); font: inherit; padding: 12px 13px; outline: none; }
+    textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(230, 109, 63, .15); }
+    button { border: 0; border-radius: 12px; padding: 0 17px; background: var(--accent); color: white; font: inherit; font-weight: 800; cursor: pointer; transition: transform .15s ease, background .15s ease; }
+    button:hover { background: var(--accent-dark); transform: translateY(-1px); }
+    button.secondary { background: transparent; color: var(--muted); border: 1px solid var(--line); padding: 8px 11px; font-size: 12px; }
+    button.secondary:hover { background: #fffdf9; color: var(--ink); transform: none; }
+    button:disabled { opacity: .55; cursor: wait; transform: none; }
+    .error { color: #a33427; background: #ffe4df; border-radius: 10px; padding: 9px 11px; margin-top: 12px; font-size: 13px; display: none; }
+
+    @keyframes rise { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+    @media (max-width: 760px) {
+      main { padding-top: 26px; }
+      .hero { display: block; }
+      .live { margin-top: 18px; }
+      .grid { grid-template-columns: 1fr; }
+      .messages { min-height: 470px; }
+      .composer { align-items: stretch; }
+      .composer button { min-width: 84px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <div>
+        <div class="eyebrow">LanLink / laptop</div>
+        <h1>Nhịp cầu<br>trong nhà.</h1>
+        <p class="lede">Mở ứng dụng Android, nhập một địa chỉ bên dưới và mã ghép đôi. Mọi thứ chạy trong cùng mạng Wi‑Fi.</p>
+      </div>
+      <div class="live"><span class="live-dot"></span><span id="status">Đang khởi động...</span></div>
+    </section>
+
+    <section class="grid">
+      <aside class="card">
+        <h2>Ghép đôi</h2>
+        <div class="label">Mã phiên hiện tại</div>
+        <div class="code" id="pair-code">------</div>
+        <div class="meta">
+          <div><strong id="server-name">Laptop</strong></div>
+          <div>Địa chỉ để nhập trên điện thoại:</div>
+          <ul class="addresses" id="addresses"><li>Đang tìm...</li></ul>
+        </div>
+        <p class="hint">Giữ cửa sổ này mở trong lúc thử nghiệm. Mã sẽ đổi khi bạn khởi động lại server.</p>
+        <div id="error" class="error"></div>
+      </aside>
+
+      <section class="card messages">
+        <div class="messages-head">
+          <h2>Tin nhắn</h2>
+          <button class="secondary" id="clear" type="button">Xóa lịch sử</button>
+        </div>
+        <div class="message-list" id="message-list">
+          <div class="empty" id="empty">Chưa có tin nhắn. Gửi một câu từ điện thoại nhé.</div>
+        </div>
+        <form class="composer" id="composer">
+          <textarea id="text" maxlength="4000" placeholder="Viết tin nhắn cho điện thoại..."></textarea>
+          <button id="send" type="submit">Gửi</button>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    let lastId = 0;
+    let polling = false;
+    const $ = (id) => document.getElementById(id);
+
+    function showError(message) {
+      const box = $("error");
+      box.textContent = message;
+      box.style.display = message ? "block" : "none";
+    }
+
+    async function api(path, options) {
+      const response = await fetch(path, options);
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || payload.ok === false) {
+        throw new Error(payload.error || `HTTP ${response.status}`);
+      }
+      return payload;
+    }
+
+    function addMessage(message) {
+      if (Number(message.id) <= lastId) return;
+      lastId = Number(message.id);
+      $("empty").style.display = "none";
+      const item = document.createElement("article");
+      item.className = `message ${message.sender === "laptop" ? "laptop" : "phone"}`;
+      const meta = document.createElement("div");
+      meta.className = "message-meta";
+      meta.textContent = `${message.sender === "laptop" ? "Laptop" : "Điện thoại"} · ${message.timestamp}`;
+      const text = document.createElement("div");
+      text.className = "message-text";
+      text.textContent = message.text;
+      item.append(meta, text);
+      $("message-list").appendChild(item);
+      $("message-list").scrollTop = $("message-list").scrollHeight;
+    }
+
+    async function loadInfo() {
+      const info = await api("/api/info");
+      $("server-name").textContent = info.name || "Laptop";
+      $("pair-code").textContent = info.pair_code || "MỞ TẠI LAPTOP";
+      const addresses = $("addresses");
+      addresses.innerHTML = "";
+      (info.addresses || []).forEach((address) => {
+        const li = document.createElement("li");
+        li.textContent = `http://${address}:${info.port}`;
+        addresses.appendChild(li);
+      });
+      if (!addresses.children.length) {
+        const li = document.createElement("li");
+        li.textContent = `http://127.0.0.1:${info.port}`;
+        addresses.appendChild(li);
+      }
+      $("status").textContent = "Sẵn sàng trong mạng LAN";
+    }
+
+    async function poll() {
+      if (polling) return;
+      polling = true;
+      try {
+        const data = await api(`/api/messages?since=${encodeURIComponent(lastId)}`);
+        (data.messages || []).forEach(addMessage);
+        showError("");
+      } catch (error) {
+        $("status").textContent = "Mất kết nối với server";
+        showError(error.message);
+      } finally {
+        polling = false;
+      }
+    }
+
+    $("composer").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const input = $("text");
+      const text = input.value.trim();
+      if (!text) return;
+      $("send").disabled = true;
+      try {
+        const data = await api("/api/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text })
+        });
+        addMessage(data.message);
+        input.value = "";
+        showError("");
+      } catch (error) {
+        showError(error.message);
+      } finally {
+        $("send").disabled = false;
+        input.focus();
+      }
+    });
+
+    $("clear").addEventListener("click", async () => {
+      try {
+        await api("/api/messages/clear", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+        lastId = 0;
+        $("message-list").innerHTML = '<div class="empty" id="empty">Chưa có tin nhắn. Gửi một câu từ điện thoại nhé.</div>';
+        showError("");
+      } catch (error) {
+        showError(error.message);
+      }
+    });
+
+    loadInfo().then(() => { poll(); window.setInterval(poll, 1000); }).catch((error) => {
+      $("status").textContent = "Không khởi động được";
+      showError(error.message);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.LanLink" parent="Theme.MaterialComponents.Light.NoActionBar" tools:targetApi="29">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">@color/lanlink_accent</item>
+        <item name="android:windowBackground">@color/lanlink_background</item>
+        <item name="android:navigationBarColor">@color/lanlink_background</item>
+        <item name="android:statusBarColor">@color/lanlink_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="colorPrimary">@color/lanlink_accent</item>
+        <item name="colorPrimaryVariant">@color/lanlink_accent_dark</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSurface">@color/lanlink_surface</item>
+        <item name="colorOnSurface">@color/lanlink_ink</item>
+        <item name="android:textColorPrimary">@color/lanlink_ink</item>
+        <item name="android:textColorSecondary">@color/lanlink_muted</item>
+    </style>
+</resources>

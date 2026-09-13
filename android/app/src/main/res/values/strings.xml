@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">LanLink</string>
+    <string name="subtitle">Kết nối điện thoại với laptop trong cùng Wi‑Fi</string>
+    <string name="connection_title">Ghép đôi thiết bị</string>
+    <string name="host_hint">Địa chỉ laptop (ví dụ: 192.168.1.10:8765)</string>
+    <string name="pair_code_hint">Mã 6 số hiển thị trên laptop</string>
+    <string name="connect">Kết nối</string>
+    <string name="disconnect">Ngắt kết nối</string>
+    <string name="status_idle">Chưa kết nối</string>
+    <string name="status_connecting">Đang kết nối…</string>
+    <string name="messages_title">Tin nhắn</string>
+    <string name="message_hint">Viết tin nhắn cho laptop…</string>
+    <string name="send">Gửi</string>
+    <string name="clear_local">Xóa màn hình</string>
+    <string name="empty_messages">Chưa có tin nhắn nào. Hãy gửi một câu chào.</string>
+    <string name="host_required">Nhập địa chỉ laptop trước đã.</string>
+    <string name="code_required">Nhập mã ghép đôi 6 số.</string>
+    <string name="not_connected">Chưa kết nối với laptop.</string>
+    <string name="message_bubble">%1$s · %2$s\n%3$s</string>
+</resources>

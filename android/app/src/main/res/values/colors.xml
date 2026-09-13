@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="lanlink_ink">#17211B</color>
+    <color name="lanlink_muted">#536158</color>
+    <color name="lanlink_hint">#617066</color>
+    <color name="lanlink_accent">#C85B31</color>
+    <color name="lanlink_accent_dark">#983D1E</color>
+    <color name="lanlink_surface">#FFFFFF</color>
+    <color name="lanlink_background">#ECEDE6</color>
+    <color name="lanlink_mint">#CFE9D9</color>
+    <color name="lanlink_field_border">#9BAAA0</color>
+</resources>
