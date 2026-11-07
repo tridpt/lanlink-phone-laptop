@@ -166,6 +166,16 @@ class MainActivity : AppCompatActivity() {
                         "GET",
                         "$host/api/messages?token=$token&since=$since"
                     )
+                    if (result.statusCode == 401) {
+                        runOnUiThread {
+                            if (generation == connectionGeneration.get()) {
+                                disconnect()
+                                setStatus("Phiên ghép nối đã hết hạn, vui lòng ghép nối lại")
+                                showToast("Phiên đã hết hạn. Vui lòng nhập mã ghép nối mới.")
+                            }
+                        }
+                        break
+                    }
                     requireSuccess(result)
                     appendMessages(JSONObject(result.body).optJSONArray("messages"))
                     runOnUiThread {
@@ -208,6 +218,16 @@ class MainActivity : AppCompatActivity() {
                     .put("token", token)
                     .put("text", text)
                 val result = request("POST", "$host/api/messages", body)
+                if (result.statusCode == 401) {
+                    runOnUiThread {
+                        if (generation == connectionGeneration.get()) {
+                            disconnect()
+                            setStatus("Phiên ghép nối đã hết hạn, vui lòng ghép nối lại")
+                            showToast("Phiên đã hết hạn. Vui lòng nhập mã ghép nối mới.")
+                        }
+                    }
+                    return@sendTask
+                }
                 requireSuccess(result)
                 if (!connected || generation != connectionGeneration.get()) return@sendTask
                 val message = JSONObject(result.body).getJSONObject("message")

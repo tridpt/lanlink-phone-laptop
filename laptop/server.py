@@ -142,11 +142,74 @@ class LanLinkHandler(BaseHTTPRequestHandler):
     def lan_state(self) -> LanLinkState:
         return self.server.state  # type: ignore[attr-defined]
 
+    def _allowed_origins(self) -> set[str]:
+        port = self.server.server_port
+        return {
+            f"http://127.0.0.1:{port}",
+            f"http://localhost:{port}",
+            f"http://[::1]:{port}",
+        }
+
+    def _allowed_hosts(self) -> set[str]:
+        port = self.server.server_port
+        return {
+            "127.0.0.1",
+            "localhost",
+            "[::1]",
+            f"127.0.0.1:{port}",
+            f"localhost:{port}",
+            f"[::1]:{port}",
+        }
+
+    @staticmethod
+    def _origin_from_referer(referer: str) -> str | None:
+        parsed = urlsplit(referer.strip())
+        if not parsed.scheme or not parsed.netloc:
+            return None
+        return f"{parsed.scheme.lower()}://{parsed.netloc.lower()}"
+
+    def _cors_origin(self) -> str | None:
+        origin = self.headers.get("Origin", "").strip().rstrip("/").lower()
+        if origin and origin in self._allowed_origins():
+            return origin
+        return None
+
+    def _has_cross_origin_headers(self) -> bool:
+        allowed_origins = self._allowed_origins()
+        origin = self.headers.get("Origin")
+        if origin is not None:
+            normalized_origin = origin.strip().rstrip("/").lower()
+            if normalized_origin not in allowed_origins:
+                return True
+
+        referer = self.headers.get("Referer")
+        if referer is not None:
+            referer_origin = self._origin_from_referer(referer)
+            if referer_origin is None or referer_origin not in allowed_origins:
+                return True
+
+        sec_fetch_site = self.headers.get("Sec-Fetch-Site", "").strip().lower()
+        if sec_fetch_site and sec_fetch_site not in {"same-origin", "none"}:
+            return True
+
+        return False
+
     def _is_local_request(self) -> bool:
         try:
-            return ipaddress.ip_address(self.client_address[0]).is_loopback
+            is_loopback = ipaddress.ip_address(self.client_address[0]).is_loopback
         except ValueError:
             return False
+        if not is_loopback:
+            return False
+
+        host = self.headers.get("Host", "").strip().lower()
+        if host and host not in self._allowed_hosts():
+            return False
+
+        if self._has_cross_origin_headers():
+            return False
+
+        return True
 
     def _token_from(self, body: dict[str, Any] | None = None) -> str | None:
         authorization = self.headers.get("Authorization", "")
@@ -198,7 +261,10 @@ class LanLinkHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(encoded)))
         self.send_header("Cache-Control", "no-store")
-        self.send_header("Access-Control-Allow-Origin", "*")
+        cors_origin = self._cors_origin()
+        if cors_origin is not None:
+            self.send_header("Access-Control-Allow-Origin", cors_origin)
+            self.send_header("Vary", "Origin")
         if extra_headers:
             for key, value in extra_headers.items():
                 self.send_header(key, value)
@@ -225,11 +291,22 @@ class LanLinkHandler(BaseHTTPRequestHandler):
         self.close_connection = True
 
     def do_OPTIONS(self) -> None:  # noqa: N802 - required by BaseHTTPRequestHandler
+        if self._has_cross_origin_headers():
+            self.send_response(HTTPStatus.FORBIDDEN)
+            self.send_header("Content-Length", "0")
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.close_connection = True
+            return
+
         self.send_response(HTTPStatus.NO_CONTENT)
         self.send_header("Content-Length", "0")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        cors_origin = self._cors_origin()
+        if cors_origin is not None:
+            self.send_header("Access-Control-Allow-Origin", cors_origin)
+            self.send_header("Vary", "Origin")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.end_headers()
         self.close_connection = True
 
